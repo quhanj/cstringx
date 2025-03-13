@@ -1,5 +1,6 @@
 #include "cstringx.h"
 #include <string.h>
+#include <stdarg.h>
 #include <stdlib.h>
 
 char* dups(char* s){
@@ -28,6 +29,12 @@ char* replace(char* s,char o,char r){
 	}
 	return t;
 }
+void replaceself(char*s,char o,char r){
+	while(*s){
+		if(*s==o)*s=r;
+		s++;
+	}
+}
 char** explode(char* s,char c){
 	size_t n=nchar(s,c)+1;
 	char* d=replace(s,c,0);
@@ -42,4 +49,35 @@ char** explode(char* s,char c){
 void free_exploded(char** e){
 	free(e[0]);
 	free(e);
+}
+char* _join(const char* first, ...) {
+    va_list args;
+    size_t total_len = 0;
+    const char* arg;
+    // 计算总长度
+    va_start(args, first);
+    total_len = strlen(first);
+    while ((arg = va_arg(args, const char*)) != NULL) {
+        total_len += strlen(arg);
+    }
+    va_end(args);
+    total_len += 1; // 终止符
+    // 分配内存
+    char* result = (char*)malloc(total_len);
+    if (!result) {
+        return NULL;
+    }
+    // 拼接字符串
+    va_start(args, first);
+    char* p = result;
+    strcpy(p, first);
+    p += strlen(first);
+    while ((arg = va_arg(args, const char*)) != NULL) {
+        strcpy(p, arg);
+        p += strlen(arg);
+    }
+    va_end(args);
+    // 确保终止符（虽然strcpy已处理，但确保安全）
+    *p = '\0';
+    return result;
 }
